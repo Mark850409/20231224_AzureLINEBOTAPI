@@ -13,7 +13,7 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,JoinEvent,FollowEvent
 )
-# 台股API
+# # 台股API
 import twstock
 # 奇摩API
 import yfinance as yf
@@ -25,7 +25,7 @@ import json
 from datetime import datetime
 import pandas as pd
 from bs4 import BeautifulSoup
-
+import re
 
 #取得LINEBOT的CHANNEL_SECRET&CHANNEL_ACCESS_TOKEN&USER_ID
 line_bot_api = LineBotApi(setting.CHANNEL_ACCESS_TOKEN)
@@ -36,6 +36,8 @@ USER_ID=setting.USER_ID
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
+    #本機測試，這段請註解掉
+    
     # 取得LINE簽章表頭
     signature = req.headers['x-line-signature']
 
@@ -44,62 +46,31 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     logging.info("Request body: " + body)
 
-    
     # handle webhook body
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
         func.HttpResponse(status_code=400)
+    
+    return func.HttpResponse("OK",status_code=200)
+    
+    #本機測試拿到資料
+    # msg=''
+    # data=getYahooAPI('2330')
+    # data_info=getTWstockInfo('2330')
+    # dt_obj = datetime.fromtimestamp(int(data[0]['Date']/1000))
+    # msg+="當日即時股價資訊如下：\n"
+    # msg+="====================\n"
+    # msg+=f"開盤價:{data[0]['Open']}\n"
+    # msg+=f"最高價:{data[0]['High']}\n"
+    # msg+=f"最低價:{data[0]['Low']}\n"
+    # msg+=f"收盤價:{data[0]['Close']}\n"
+    # msg+=f"最後更新時間:{dt_obj}"
+    # return func.HttpResponse(
+    #         f'{json.dumps(data)}\n\n{msg}\n\n{data_info}',
+    #         mimetype="application/json",
+    #     )
 
-    return func.HttpResponse("OK")
-
-#取得cmoney API資料，取得公司名稱等相關資訊
-def getYahooStockDetail(stock_id):
-    msg=""
-    url = f"https://www.cmoney.tw/finance/f00026.aspx?s={stock_id}"
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/111.25 (KHTML, like Gecko) Chrome/99.0.2345.81 Safari/123.36','Connection':'close'}
-    res = requests.get(url,headers=headers)
-    time.sleep(5)
-    soup = BeautifulSoup(res.text,'html.parser')
-    # 取得基本資料的cmkey
-    for line in soup.find_all(class_="mobi-finance-subnavi-link"):
-        if line.text == '基本資料':
-            cmkey = line['cmkey'].replace('=','%3D')
-
-    url = f"https://www.cmoney.tw/finance/ashx/mainpage.ashx?action=GetStockBasicInfo&stockId={stock_id}&cmkey={cmkey}"
-
-    # 特別注意要加入Referer
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/111.25 (KHTML, like Gecko) Chrome/99.0.2345.81 Safari/123.36',
-        'Referer': f"https://www.cmoney.tw/finance/f00026.aspx?s={stock_id}",
-        'Connection':'close'
-    }
-
-    res = requests.get(url,headers=headers)
-    time.sleep(5)
-
-    #取得資料
-    data = res.json()[0]
-    #將資料轉換為DataFrame格式
-    df = pd.DataFrame({
-        'CompanyName':data['CompanyName'],
-        'Industry':data['Industry'],
-        'SubIndustry':data['SubIndustry'],
-        'Business':data['Business']
-    },index=[stock_id])
-
-    #將處理好的資料進行回傳，並轉換為JSON
-    df = df.to_json(orient='records')
-    df = json.loads(df)
-
-    #將訊息資料打包，回傳訊息內容字串
-    msg+="您查詢的資訊如下：\n"
-    msg+="====================\n"
-    msg+=f"公司名稱:{df[0]['CompanyName']}\n"
-    msg+=f"產業別:{df[0]['Industry']}\n"
-    msg+=f"產業別細項:{df[0]['SubIndustry']}\n"
-    msg+=f"經營項目:{df[0]['Business']}"
-    return msg
 
 #取得Yahoo API資料，取得公司名稱等相關資訊
 def getYahooAPI(stock):
@@ -132,10 +103,20 @@ def getYahooAPI(stock):
     msg+=f"最高價:{data[0]['High']}\n"
     msg+=f"最低價:{data[0]['Low']}\n"
     msg+=f"收盤價:{data[0]['Close']}\n"
-    msg+=f"最後更新時間:{dt_obj}\n"
+    msg+=f"最後更新時間:{dt_obj}"
+    return data
+
+def getTWstockInfo(stock):
+    #透過twstock API取得產業資訊
+    msg=""
+    msg+="您查詢的資訊如下：\n"
+    msg+="====================\n"
+    msg+=f"公司名稱:{twstock.codes[stock].name}\n"
+    msg+=f"ISIN:{twstock.codes[stock].ISIN}\n"
+    msg+=f"成立時間:{twstock.codes[stock].start}\n"
+    msg+=f"是否上市:{twstock.codes[stock].market}\n"
+    msg+=f"產業別:{twstock.codes[stock].group}"
     return msg
-
-
 
 #文字訊息觸發點
 @handler.add(MessageEvent, message=TextMessage)
@@ -144,7 +125,7 @@ def message_text(event):
     text=event.message.text
     #用twstock判斷台股代號是否存在，存在則抓取資料，並回傳訊息，否則回傳查無資料
     if text in twstock.twse:
-        stock_detail=getYahooStockDetail(text)
+        stock_detail=getTWstockInfo(text)
         stock_msg=getYahooAPI(text)
         result=stock_detail+"\n\n"+stock_msg
         line_bot_api.reply_message(

@@ -1,0 +1,7 @@
+azure-functions
+requests
+line-bot-sdk
+yfinance
+pandas
+BeautifulSoup4
+twstock
