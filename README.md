@@ -9,18 +9,21 @@
 - [20231224\_AzureLINEBOTAPI](#20231224_azurelinebotapi)
     - [簡介](#簡介)
     - [目錄](#目錄)
-    - [專案架構](#專案架構)
-    - [請協助驗證程式內容](#請協助驗證程式內容)
-    - [完成畫面預覽](#完成畫面預覽)
-    - [使用方式](#使用方式)
+  - [專案架構](#專案架構)
+  - [請協助驗證程式內容](#請協助驗證程式內容)
+  - [完成畫面預覽](#完成畫面預覽)
+  - [使用方式](#使用方式)
+  - [測試方式-使用postman](#測試方式-使用postman)
     - [一、事前準備](#一事前準備)
     - [二、開始撰寫程式](#二開始撰寫程式)
     - [三、開始部署到AZURE FUNCTION](#三開始部署到azure-function)
+    - [四、參考連結](#四參考連結)
+    - [五、額外補充，使用API打推播訊息給LINE](#五額外補充使用api打推播訊息給line)
 
 
 ---
 
-### 專案架構
+## 專案架構
 ```
 20231224_AzureLINEBOTAPI
 ├─ .funcignore
@@ -74,14 +77,14 @@
 ```
 
 
-### 請協助驗證程式內容
+## 請協助驗證程式內容
 > 1. 我抓的是即時資料，因此每天的股價數值應與Yahoo相符，請協助進入此網址確認https://tw.stock.yahoo.com/
 > 2. 請驗證LINEBOT輸入正確台股代號是否會回傳訊息，因為API要資料不會即時回傳，等待個1分鐘才收到回覆都算正常，超過時間可能代表程式有誤，請協助提出
 > 3. 請驗證LINEBOT輸入錯誤代號是否會出現"您的股票代號查不到呢，換個股票代號試試!!!"的訊息
 
 ---
 
-### 完成畫面預覽
+## 完成畫面預覽
 
 輸入正確台股代碼，回傳對應訊息
 ![image-20231224213710915](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231224213710915.png)
@@ -94,7 +97,7 @@
 
 ---
 
-### 使用方式
+## 使用方式
 1. 請先進入以下網址，https://github.com/Mark850409/20231224_AzureLINEBOTAPI
 2. 點選code按鈕，下方有個download ZIP
 3. 使用git的同學可以點選code按鈕，複製https網址，開啟CMD，輸入以下指令，將專案複製到自己本機進行使用
@@ -105,7 +108,7 @@ git clone https://github.com/Mark850409/20231224_AzureLINEBOTAPI.git
 
 ---
 
-### 測試方式-使用postman
+## 測試方式-使用postman
 
 選擇GET，輸入測試網址，點選send
 ![image-20231230003205989](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230003205989.png)
