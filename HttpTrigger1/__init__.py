@@ -25,7 +25,8 @@ import json
 from datetime import datetime
 import pandas as pd
 from bs4 import BeautifulSoup
-import re
+
+
 
 #取得LINEBOT的CHANNEL_SECRET&CHANNEL_ACCESS_TOKEN&USER_ID
 line_bot_api = LineBotApi(setting.CHANNEL_ACCESS_TOKEN)
@@ -36,25 +37,28 @@ USER_ID=setting.USER_ID
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    #本機測試，這段請註解掉
+    #本機測試，這段請調整
     
-    # 取得LINE簽章表頭
+    #取得LINE簽章表頭
+    #signature = "b'zClv8I9kaPxJg7xlQhQxmIFzilPOVnGvh9F54dUFRmQ='"
+    
+    #上線測試，請使用這段
     signature = req.headers['x-line-signature']
+       
+    logging.info("signature: " + signature)
 
-    # 取得LINE body內容
+    #取得LINE body內容
     body = req.get_body().decode("utf-8")
 
     logging.info("Request body: " + body)
-
+    
     # handle webhook body
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
         func.HttpResponse(status_code=400)
     
-    return func.HttpResponse("OK",status_code=200)
-    
-    #本機測試拿到資料
+    #本機測試拿到資料，上線測試請註解
     # msg=''
     # data=getYahooAPI('2330')
     # data_info=getTWstockInfo('2330')
@@ -66,11 +70,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # msg+=f"最低價:{data[0]['Low']}\n"
     # msg+=f"收盤價:{data[0]['Close']}\n"
     # msg+=f"最後更新時間:{dt_obj}"
+    # line_bot_api.push_message(USER_ID, TextSendMessage(text=msg))
     # return func.HttpResponse(
     #         f'{json.dumps(data)}\n\n{msg}\n\n{data_info}',
     #         mimetype="application/json",
     #     )
-
+    #上線測試請使用這段
+    return func.HttpResponse("OK",status_code=200)
 
 #取得Yahoo API資料，取得公司名稱等相關資訊
 def getYahooAPI(stock):

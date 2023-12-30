@@ -5,20 +5,24 @@
 建立AZURE FUNCTION並部署LINE BOT應用
 
 ### 目錄
-
 - [20231224\_AzureLINEBOTAPI](#20231224_azurelinebotapi)
     - [簡介](#簡介)
     - [目錄](#目錄)
   - [專案架構](#專案架構)
   - [請協助驗證程式內容](#請協助驗證程式內容)
   - [完成畫面預覽](#完成畫面預覽)
-  - [使用方式](#使用方式)
-  - [測試方式-使用postman](#測試方式-使用postman)
+  - [GitHub使用方式](#github使用方式)
+  - [測試方式](#測試方式)
+    - [使用azure function tools測試](#使用azure-function-tools測試)
+    - [使用postman測試回傳訊息](#使用postman測試回傳訊息)
+    - [使用postman打API並推播訊息給LINE](#使用postman打api並推播訊息給line)
+    - [本機測試才需要執行此步驟(產生LINE簽章)](#本機測試才需要執行此步驟產生line簽章)
+    - [注意事項](#注意事項)
     - [一、事前準備](#一事前準備)
     - [二、開始撰寫程式](#二開始撰寫程式)
     - [三、開始部署到AZURE FUNCTION](#三開始部署到azure-function)
     - [四、參考連結](#四參考連結)
-    - [五、額外補充，使用API打推播訊息給LINE](#五額外補充使用api打推播訊息給line)
+
 
 
 ---
@@ -79,7 +83,7 @@
 
 ## 請協助驗證程式內容
 > 1. 我抓的是即時資料，因此每天的股價數值應與Yahoo相符，請協助進入此網址確認https://tw.stock.yahoo.com/
-> 2. 請驗證LINEBOT輸入正確台股代號是否會回傳訊息，因為API要資料不會即時回傳，等待個1分鐘才收到回覆都算正常，超過時間可能代表程式有誤，請協助提出
+> 2. 請驗證LINEBOT輸入正確台股代號是否會回傳訊息，因為API要資料不會即時回傳，等待個1分鐘才收到回覆都算正常，超過時間可能代表程式有誤，請協助提出(問題已解)
 > 3. 請驗證LINEBOT輸入錯誤代號是否會出現"您的股票代號查不到呢，換個股票代號試試!!!"的訊息
 
 ---
@@ -87,17 +91,14 @@
 ## 完成畫面預覽
 
 輸入正確台股代碼，回傳對應訊息
-![image-20231224213710915](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231224213710915.png)
+![image-20231230151901499](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230151901499.png)
 
 隨意輸入錯誤代碼，回傳對應訊息
-![image-20231224213728347](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231224213728347.png)
-
-奇摩官網驗證資料正確無誤
-![image-20231224214404364](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231224214404364.png)
+![image-20231230151916489](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230151916489.png)
 
 ---
 
-## 使用方式
+## GitHub使用方式
 1. 請先進入以下網址，https://github.com/Mark850409/20231224_AzureLINEBOTAPI
 2. 點選code按鈕，下方有個download ZIP
 3. 使用git的同學可以點選code按鈕，複製https網址，開啟CMD，輸入以下指令，將專案複製到自己本機進行使用
@@ -108,7 +109,37 @@ git clone https://github.com/Mark850409/20231224_AzureLINEBOTAPI.git
 
 ---
 
-## 測試方式-使用postman
+## 測試方式
+
+### 使用azure function tools測試
+```
+使用ngrok短暫將網站變成https
+
+ngrok config add-authtoken [自己的token]
+ngrok http 7071 
+```
+首先執行ngrok.exe
+![image-20231230140304179](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230140304179.png)
+
+
+輸入指令ngrok http 7071 
+![image-20231230140424320](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230140424320.png)
+
+
+等待測試環境建立完成
+![image-20231230140555359](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230140555359.png)
+
+
+網站回傳結果如下
+![image-20231230140751402](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230140751402.png)
+
+
+完成畫面如下
+![image-20231230140837949](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230140837949.png)
+
+--- 
+
+### 使用postman測試回傳訊息
 
 選擇GET，輸入測試網址，點選send
 ![image-20231230003205989](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230003205989.png)
@@ -116,6 +147,47 @@ git clone https://github.com/Mark850409/20231224_AzureLINEBOTAPI.git
 回傳正確訊息
 ![image-20231230003230516](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230003230516.png)
 
+
+### 使用postman打API並推播訊息給LINE
+
+方法選擇post，貼上API網址，並在authorization的地方點選Bearer Token，貼上自己的token
+![image-20231230005620845](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230005620845.png)
+
+
+在header增加json表頭
+![image-20231230005447046](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230005447046.png)
+
+
+BODY增加要傳送的訊息
+![image-20231230005523375](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230005523375.png)
+
+
+![image-20231230005655597](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230005655597.png)
+
+
+成功畫面如附圖
+![image-20231230005739028](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230005739028.png)
+
+
+### 本機測試才需要執行此步驟(產生LINE簽章)
+```python
+import base64
+import hashlib
+import hmac
+body=''
+channel_secret = '填上自己的token' # Channel secret string
+hash = hmac.new(channel_secret.encode('utf-8'),body.encode('utf-8'), hashlib.sha256).digest()
+signature = base64.b64encode(hash)
+print(signature)
+```
+
+### 注意事項
+> LINE的webhook網址必須是https，而且要是publicIP
+> CHANNEL_ACCESS_TOKEN、CHANNEL_SECRET、USER_ID可在LINE官方後台查詢
+> CHANNEL_ACCESS_TOKEN、CHANNEL_SECRET請保存好，不要擅自給別人做使用
+
+
+---
 
 ### 一、事前準備
 
@@ -193,7 +265,8 @@ import json
 from datetime import datetime
 import pandas as pd
 from bs4 import BeautifulSoup
-import re
+
+
 
 #取得LINEBOT的CHANNEL_SECRET&CHANNEL_ACCESS_TOKEN&USER_ID
 line_bot_api = LineBotApi(setting.CHANNEL_ACCESS_TOKEN)
@@ -204,21 +277,46 @@ USER_ID=setting.USER_ID
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    # 取得LINE簽章表頭
+    #本機測試，這段請調整
+    
+    #取得LINE簽章表頭
+    #signature = "b'zClv8I9kaPxJg7xlQhQxmIFzilPOVnGvh9F54dUFRmQ='"
+    
+    #上線測試，請使用這段
     signature = req.headers['x-line-signature']
+       
+    logging.info("signature: " + signature)
 
-    # 取得LINE body內容
+    #取得LINE body內容
     body = req.get_body().decode("utf-8")
 
     logging.info("Request body: " + body)
-
+    
     # handle webhook body
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
         func.HttpResponse(status_code=400)
-    return func.HttpResponse("OK")
-
+    
+    #本機測試拿到資料，上線測試請註解
+    # msg=''
+    # data=getYahooAPI('2330')
+    # data_info=getTWstockInfo('2330')
+    # dt_obj = datetime.fromtimestamp(int(data[0]['Date']/1000))
+    # msg+="當日即時股價資訊如下：\n"
+    # msg+="====================\n"
+    # msg+=f"開盤價:{data[0]['Open']}\n"
+    # msg+=f"最高價:{data[0]['High']}\n"
+    # msg+=f"最低價:{data[0]['Low']}\n"
+    # msg+=f"收盤價:{data[0]['Close']}\n"
+    # msg+=f"最後更新時間:{dt_obj}"
+    # line_bot_api.push_message(USER_ID, TextSendMessage(text=msg))
+    # return func.HttpResponse(
+    #         f'{json.dumps(data)}\n\n{msg}\n\n{data_info}',
+    #         mimetype="application/json",
+    #     )
+    #上線測試請使用這段
+    return func.HttpResponse("OK",status_code=200)
 
 #取得Yahoo API資料，取得公司名稱等相關資訊
 def getYahooAPI(stock):
@@ -252,7 +350,7 @@ def getYahooAPI(stock):
     msg+=f"最低價:{data[0]['Low']}\n"
     msg+=f"收盤價:{data[0]['Close']}\n"
     msg+=f"最後更新時間:{dt_obj}"
-    return msg
+    return data
 
 def getTWstockInfo(stock):
     #透過twstock API取得產業資訊
@@ -350,29 +448,20 @@ twstock
 --- 
 
 ### 四、參考連結
-1. LINEBOT自動回覆訊息 https://steam.oxxostudio.tw/category/python/example/line-reply-message.html
+
+1. LINEBOT自動回覆訊息 
+https://steam.oxxostudio.tw/category/python/example/line-reply-message.html
+   
 2. LINEBOT 官方API
 https://developers.line.biz/en/reference/messaging-api/#send-reply-message
 
+3. 下載ngrok
+https://ngrok.com/download
+
+4. ngrok教學
+https://ithelp.ithome.com.tw/articles/10197345
+
+5. LINE signature-validation
+https://developers.line.biz/en/reference/messaging-api/#signature-validation
 
 ---
-
-### 五、額外補充，使用API打推播訊息給LINE
-
-方法選擇post，貼上API網址，並在authorization的地方點選Bearer Token，貼上自己的token
-![image-20231230005620845](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230005620845.png)
-
-
-在header增加json表頭
-![image-20231230005447046](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230005447046.png)
-
-
-BODY增加要傳送的訊息
-![image-20231230005523375](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230005523375.png)
-
-
-![image-20231230005655597](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230005655597.png)
-
-
-成功畫面如附圖
-![image-20231230005739028](https://raw.githubusercontent.com/Mark850409/UploadGithubImage/master/image-20231230005739028.png)
