@@ -182,9 +182,13 @@ print(signature)
 ```
 
 ### 注意事項
-> LINE的webhook網址必須是https，而且要是publicIP
-> CHANNEL_ACCESS_TOKEN、CHANNEL_SECRET、USER_ID可在LINE官方後台查詢
-> CHANNEL_ACCESS_TOKEN、CHANNEL_SECRET請保存好，不要擅自給別人做使用
+```
+1. LINE的webhook網址必須是https，而且要是publicIP
+
+2. CHANNEL_ACCESS_TOKEN、CHANNEL_SECRET、USER_ID可在LINE官方後台查詢
+
+3. CHANNEL_ACCESS_TOKEN、CHANNEL_SECRET請保存好，不要擅自給別人做使用
+```
 
 
 ---
